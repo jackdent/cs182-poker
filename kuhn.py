@@ -57,8 +57,8 @@ class KuhnPoker(object):
             winner = self.play_hand()
             winning_agent = 1 if winner is self.agent_1 else 2
 
-            print('Agent %d won the hand. Agents 1 and 2 now have stacks %d and %d respectively.' %
-                 (winning_agent, self.agent_1.stack_size, self.agent_2.stack_size))
+            print('Agent %d won the hand. Agents 1 and 2 now have %d and %d chips, respectively.'
+                  % (winning_agent, self.agent_1.stack_size, self.agent_2.stack_size))
 
             hands += 1
 
@@ -67,6 +67,7 @@ class KuhnPoker(object):
 
         # Collect blinds
         for agent in (self.agent_1, self.agent_2):
+            assert agent.stack_size > 0
             agent.stack_size -= 1
             pot += 1
 
