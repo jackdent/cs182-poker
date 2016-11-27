@@ -15,11 +15,37 @@ class Node():
 
 	def getStrategy(self, weight):
 		normalizingSum = 0
-		for i in range(NUM_ACTIONS):
-			if regretSum[i] > 0:
-				self.strategy[0]
+		for a in range(NUM_ACTIONS):
+			if self.regretSum[a] > 0:
+				self.strategy[a] = self.regretSum[a]
+			else:
+				self.strategy[a] = 0
+			normalizingSum += self.strategy[a]
+
+		for a in range(NUM_ACTIONS):
+			if normalizingSum > 0:
+				self.strategy[a] /= normalizingSum
+			else:
+				self.strategy[a] = 1.0/NUM_ACTIONS
+
+			self.strategySum[a] += weight * self.strategy[a]
 
 	def getAverageStrategy(self):
+		avgStrategy = [0, 0]
+		normalizingSum = 0
+
+		for a in range(NUM_ACTIONS):
+			normalizingSum += self.strategySum[a]
+		for a in range(NUM_ACTIONS):
+			if normalizingSum > 0:
+				avgStrategy[a] = self.strategySum[a]/normalizingSum
+			else:
+				avgStrategy[a] = 1.0/NUM_ACTIONS
+
+	def toString(self):
+		avgStrategy = self.getAverageStrategy()
+		', '.join(avgStrategy)
+		return ('%s: %s', self.infoset, avgStrategy)
 
 
 class KuhnTrainer():
