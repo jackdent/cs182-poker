@@ -2,7 +2,7 @@ import random
 
 # Jack, Queen and King, respectively
 CARDS = [1, 2, 3]
-
+ACTIONS = ['p', 'b']
 
 class Action(object):
     PASS, BET = range(2)
@@ -35,7 +35,7 @@ class InteractiveAgent(Agent):
         card, history, _, _, _ = game_state
 
         while True:
-            if len(history) > 0 and history[-1] == 1:
+            if len(history) > 0 and history[-1] == 'b':
                 action = raw_input('Your card is %d, you have %d chips remaining, and Agent 2 bet. Enter '
                                '"p" to pass or "b" to bet: ' % (card, self.stack_size))
             else:
@@ -80,7 +80,7 @@ class KuhnPoker(object):
         cards = {self.agent_1: shuffled_cards[0], self.agent_2: shuffled_cards[1]}
 
         # Allow agents to bet in rounds until the end of the hand
-        history = []
+        history = ''
         agents = [self.agent_1, self.agent_2]
         winner = None
 
@@ -100,12 +100,12 @@ class KuhnPoker(object):
             if len(history) > 0:
                 prev_action = history[-1]
 
-                if prev_action == action:
+                if prev_action == ACTIONS[action]:
                     winner = max(cards, key=cards.get)
-                elif prev_action == Action.BET and action == Action.PASS:
+                elif prev_action == 'b' and ACTIONS[action] == 'p':
                     winner = prev_agent
 
-            history.append(action)
+            history += ACTIONS[action]
             agents.reverse()
 
         winner.stack_size += pot
