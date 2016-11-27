@@ -121,9 +121,9 @@ class KuhnTrainer():
 				nextHistory = history + 'b'
 
 			if player == 0:
-				util[a] = self.cfr(cards, nextHistory, p0 * strategy[a], p1)
+				util[a] = -self.cfr(cards, nextHistory, p0 * strategy[a], p1)
 			else:
-				util[a] = self.cfr(cards, nextHistory, p0, p1 * strategy[a])
+				util[a] = -self.cfr(cards, nextHistory, p0, p1 * strategy[a])
 			nodeUtil += strategy[a] * util[a]
 
 		# Compute regrets
@@ -134,15 +134,15 @@ class KuhnTrainer():
 			else:
 				node.regretSum[a] += p0 * regret
 
-		self.nodeMap[infoset] = node
+		# self.nodeMap[infoset] = node
 
 		return nodeUtil
 
 
 if __name__ == '__main__':
-	k = KuhnTrainer(10000)
+	k = KuhnTrainer(100000)
 	k.train()
 	training_data = k.nodeMap
 	BUY_IN = 10
-	game = poker.KuhnPoker(poker.InteractiveAgent(BUY_IN), poker.TrainedAgent(BUY_IN, training_data))
+	game = poker.KuhnPoker(poker.SimpleAgent(BUY_IN), poker.TrainedAgent(BUY_IN, training_data))
 	game.play()

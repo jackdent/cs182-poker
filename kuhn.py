@@ -39,7 +39,7 @@ class TrainedAgent(Agent):
         card, history, _, _, _ = game_state
         infoset = str(card) + history
         strategy = self.training_data[infoset].getAverageStrategy()
-        print strategy
+        print "%s: %s" % (infoset, strategy)
         r = random.random()
         cumulative_probability = 0
         a = 0
@@ -54,7 +54,6 @@ class TrainedAgent(Agent):
 class InteractiveAgent(Agent):
     def choose_action(self, game_state):
         card, history, _, _, _ = game_state
-        print history
         while True:
             if len(history) > 0 and history[-1] == 'b':
                 action = raw_input('Your card is %d, you have %d chips remaining, and Agent 2 bet. Enter '
