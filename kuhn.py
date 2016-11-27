@@ -32,10 +32,14 @@ class SimpleAgent(Agent):
 
 class InteractiveAgent(Agent):
     def choose_action(self, game_state):
-        card, _, _, _, _ = game_state
+        card, history, _, _, _ = game_state
 
         while True:
-            action = raw_input('Your card is %d and you have %d chips remaining. Enter '
+            if len(history) > 0 and history[-1] == 1:
+                action = raw_input('Your card is %d, you have %d chips remaining, and Agent 2 bet. Enter '
+                               '"p" to pass or "b" to bet: ' % (card, self.stack_size))
+            else:
+                action = raw_input('Your card is %d and you have %d chips remaining. Enter '
                                '"p" to pass or "b" to bet: ' % (card, self.stack_size))
 
             if action == 'p':
