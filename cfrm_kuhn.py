@@ -1,4 +1,4 @@
-import kuhn as k
+import kuhn as poker
 import random
 
 # constants
@@ -6,7 +6,6 @@ CARDS = [1, 2, 3]
 PASS = 0
 BET = 1
 NUM_ACTIONS = 2
-nodeMap = {}
 
 class Node():
 	def __init__(self, infoset):
@@ -57,6 +56,7 @@ class Node():
 class KuhnTrainer():
 	def __init__(self, iterations):
 		self.iterations = iterations
+		self.nodeMap = {}
 	
 	def train(self):
 		util = 0
@@ -66,7 +66,7 @@ class KuhnTrainer():
 
 		print 'Average game value: %f' % (util / self.iterations)
 
-		for k, v in nodeMap.iteritems():
+		for k, v in self.nodeMap.iteritems():
 			print v.toString()
 
 	def cfr(self, cards, history, p0, p1):
@@ -99,11 +99,11 @@ class KuhnTrainer():
 		node = None
 		
 		# Retrieve corresponding state from dictionary
-		if infoset in nodeMap:
-			node = nodeMap[infoset]
+		if infoset in self.nodeMap:
+			node = self.nodeMap[infoset]
 		else:
 			node = Node(infoset)
-			nodeMap[infoset] = node
+			self.nodeMap[infoset] = node
 
 		strategy = []
 		util = [0, 0]
@@ -134,7 +134,7 @@ class KuhnTrainer():
 			else:
 				node.regretSum[a] += p0 * regret
 
-		nodeMap[infoset] = node
+		self.nodeMap[infoset] = node
 
 		return nodeUtil
 
@@ -142,6 +142,7 @@ class KuhnTrainer():
 if __name__ == '__main__':
 	k = KuhnTrainer(10000)
 	k.train()
-    #BUY_IN = 10
-    #game = k.KuhnPoker(k.InteractiveAgent(BUY_IN), k.SimpleAgent(BUY_IN))
-    #game.play()
+	training_data = k.nodeMap
+	BUY_IN = 10
+	game = poker.KuhnPoker(poker.InteractiveAgent(BUY_IN), poker.TrainedAgent(BUY_IN, training_data))
+	game.play()

@@ -3,6 +3,7 @@ import random
 # Jack, Queen and King, respectively
 CARDS = [1, 2, 3]
 ACTIONS = ['p', 'b']
+NUM_ACTIONS = 2
 
 class Action(object):
     PASS, BET = range(2)
@@ -29,11 +30,31 @@ class SimpleAgent(Agent):
         else:
             return Action.PASS
 
+class TrainedAgent(Agent):
+    def __init__(self, stack_size, training_data):
+        super(TrainedAgent, self).__init__(stack_size)
+        self.training_data = training_data
+
+    def choose_action(self, game_state):
+        card, history, _, _, _ = game_state
+        infoset = str(card) + history
+        strategy = self.training_data[infoset].getAverageStrategy()
+        print strategy
+        r = random.random()
+        cumulative_probability = 0
+        a = 0
+        while (a < NUM_ACTIONS - 1):
+            cumulative_probability += strategy[a]
+            if r < cumulative_probability:
+                break
+            a += 1
+
+        return a
 
 class InteractiveAgent(Agent):
     def choose_action(self, game_state):
         card, history, _, _, _ = game_state
-
+        print history
         while True:
             if len(history) > 0 and history[-1] == 'b':
                 action = raw_input('Your card is %d, you have %d chips remaining, and Agent 2 bet. Enter '
