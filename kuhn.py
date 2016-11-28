@@ -1,4 +1,5 @@
 import random
+import numpy as np
 
 # Jack, Queen and King, respectively
 CARDS = [1, 2, 3]
@@ -38,8 +39,9 @@ class TrainedAgent(Agent):
     def choose_action(self, game_state):
         card, history, _, _, _ = game_state
         infoset = str(card) + history
-        strategy = self.training_data[infoset].getAverageStrategy()
-        print "%s: %s" % (infoset, strategy)
+        # strategy = self.training_data[infoset].getAverageStrategy()
+        strategy = self.training_data[infoset]
+        print "%s:%s" % (infoset, strategy)
         r = random.random()
         cumulative_probability = 0
         a = 0
@@ -133,7 +135,23 @@ class KuhnPoker(object):
 
 
 if __name__ == '__main__':
-    BUY_IN = 10
-    game = KuhnPoker(InteractiveAgent(BUY_IN), SimpleAgent(BUY_IN))
-    game.play()
+    BUY_IN = 1000
+    user_input = raw_input('Select which agent should be used. Default is simple, i for interactive, t for trained: ')
+
+    f = open('strategy.py', 'r')
+
+    data = {}
+    for line in f:
+        l = line.strip().split(':')
+        strategy = np.fromstring(l[1], dtype=float, sep=',')
+        data[l[0]] = strategy
+
+    agent = SimpleAgent(BUY_IN)
+    if user_input == 'i':
+        agent = InteractiveAgent(BUY_IN)
+    elif user_input == 't':
+        agent = TrainedAgent(BUY_IN, data)
+
+    game = KuhnPoker(agent, TrainedAgent(BUY_IN, data))
+    game.play(180)
 

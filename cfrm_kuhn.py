@@ -1,5 +1,6 @@
 import kuhn as poker
 import random
+import csv
 
 # constants
 CARDS = [1, 2, 3]
@@ -49,8 +50,8 @@ class Node():
 
 	def toString(self):
 		avgStrategy = self.getAverageStrategy()
-		', '.join([str(x) for x in avgStrategy])
-		return ('%s: %s' % (self.infoset, avgStrategy))
+		str_strategy = ', '.join([str(x) for x in avgStrategy])
+		return ('%s:%s' % (self.infoset, str_strategy))
 
 
 class KuhnTrainer():
@@ -66,8 +67,14 @@ class KuhnTrainer():
 
 		print 'Average game value: %f' % (util / self.iterations)
 
+		f = open('strategy.py', 'w')
+
 		for k, v in self.nodeMap.iteritems():
 			print v.toString()
+			f.write(v.toString() + '\n')
+
+		f.close()
+
 
 	def cfr(self, cards, history, p0, p1):
 		nodeUtil = 0
@@ -140,9 +147,5 @@ class KuhnTrainer():
 
 
 if __name__ == '__main__':
-	k = KuhnTrainer(100000)
+	k = KuhnTrainer(1000000)
 	k.train()
-	training_data = k.nodeMap
-	BUY_IN = 10
-	game = poker.KuhnPoker(poker.SimpleAgent(BUY_IN), poker.TrainedAgent(BUY_IN, training_data))
-	game.play()
