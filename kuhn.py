@@ -23,6 +23,13 @@ class BetAgent(Agent):
         return Action.BET
 
 
+class NashAgent(Agent):
+    def choose_action(self, game_state):
+        if random.randon() < (1/3):
+            return Action.BET
+        else:
+            return Action.PASS
+
 class SimpleAgent(Agent):
     def choose_action(self, game_state):
         card, _, _, _, _ = game_state
@@ -135,8 +142,8 @@ class KuhnPoker(object):
 
 
 if __name__ == '__main__':
-    BUY_IN = 1000
-    user_input = raw_input('Select which agent should be used. Default is simple, i for interactive, t for trained: ')
+    BUY_IN = 100
+    user_input = raw_input('Select which agent should be used. Default is simple, i for interactive, t for trained, n for nash: ')
 
     f = open('strategy.py', 'r')
 
@@ -153,5 +160,5 @@ if __name__ == '__main__':
         agent = TrainedAgent(BUY_IN, data)
 
     game = KuhnPoker(agent, TrainedAgent(BUY_IN, data))
-    game.play(180)
+    game.play(2000)
 

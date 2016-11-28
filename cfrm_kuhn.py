@@ -11,9 +11,9 @@ NUM_ACTIONS = 2
 class Node():
 	def __init__(self, infoset):
 		self.infoset = infoset
-		self.regretSum = [0, 0]
-		self.strategy = [0, 0]
-		self.strategySum = [0, 0]
+		self.regretSum = [0] * NUM_ACTIONS
+		self.strategy = [0] * NUM_ACTIONS
+		self.strategySum = [0] * NUM_ACTIONS
 
 	def getStrategy(self, weight):
 		normalizingSum = 0
@@ -35,7 +35,7 @@ class Node():
 		return self.strategy
 
 	def getAverageStrategy(self):
-		avgStrategy = [0, 0]
+		avgStrategy = [0] * NUM_ACTIONS
 		normalizingSum = 0
 
 		for a in range(NUM_ACTIONS):
@@ -113,7 +113,7 @@ class KuhnTrainer():
 			self.nodeMap[infoset] = node
 
 		strategy = []
-		util = [0, 0]
+		util = [0] * NUM_ACTIONS
 
 		# Recursively compute strategy
 		if player == 0:
