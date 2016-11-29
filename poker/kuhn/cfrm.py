@@ -1,50 +1,51 @@
-import kuhn as poker
-import random
 import csv
+import os
+import random
+
+from poker.kuhn.game import CARDS, KuhnAction
 
 # constants
-CARDS = [1, 2, 3]
 PASS = 0
 BET = 1
-NUM_ACTIONS = 2
+
 
 class Node():
 	def __init__(self, infoset):
 		self.infoset = infoset
-		self.regretSum = [0] * NUM_ACTIONS
-		self.strategy = [0] * NUM_ACTIONS
-		self.strategySum = [0] * NUM_ACTIONS
+		self.regretSum = [0] * len(KuhnAction.ALL)
+		self.strategy = [0] * len(KuhnAction.ALL)
+		self.strategySum = [0] * len(KuhnAction.ALL)
 
 	def getStrategy(self, weight):
 		normalizingSum = 0
-		for a in range(NUM_ACTIONS):
+		for a in range(len(KuhnAction.ALL)):
 			if self.regretSum[a] > 0:
 				self.strategy[a] = self.regretSum[a]
 			else:
 				self.strategy[a] = 0
 			normalizingSum += self.strategy[a]
 
-		for a in range(NUM_ACTIONS):
+		for a in range(len(KuhnAction.ALL)):
 			if normalizingSum > 0:
 				self.strategy[a] /= normalizingSum
 			else:
-				self.strategy[a] = 1.0/NUM_ACTIONS
+				self.strategy[a] = 1.0 / len(KuhnAction.ALL)
 
 			self.strategySum[a] += weight * self.strategy[a]
 
 		return self.strategy
 
 	def getAverageStrategy(self):
-		avgStrategy = [0] * NUM_ACTIONS
+		avgStrategy = [0] * len(KuhnAction.ALL)
 		normalizingSum = 0
 
-		for a in range(NUM_ACTIONS):
+		for a in range(len(KuhnAction.ALL)):
 			normalizingSum += self.strategySum[a]
-		for a in range(NUM_ACTIONS):
+		for a in range(len(KuhnAction.ALL)):
 			if normalizingSum > 0:
-				avgStrategy[a] = self.strategySum[a]/normalizingSum
+				avgStrategy[a] = self.strategySum[a] / normalizingSum
 			else:
-				avgStrategy[a] = 1.0/NUM_ACTIONS
+				avgStrategy[a] = 1.0 / len(KuhnAction.ALL)
 
 		return avgStrategy
 
@@ -58,7 +59,7 @@ class KuhnTrainer():
 	def __init__(self, iterations):
 		self.iterations = iterations
 		self.nodeMap = {}
-	
+
 	def train(self):
 		util = 0
 		for _ in range(self.iterations):
@@ -67,14 +68,10 @@ class KuhnTrainer():
 
 		print 'Average game value: %f' % (util / self.iterations)
 
-		f = open('strategy.py', 'w')
-
-		for k, v in self.nodeMap.iteritems():
-			print v.toString()
-			f.write(v.toString() + '\n')
-
-		f.close()
-
+		with open(os.path.join(os.path.dirname(__file__), 'strategy.txt'), 'w') as f:
+			for k, v in self.nodeMap.iteritems():
+				print v.toString()
+				f.write(v.toString() + '\n')
 
 	def cfr(self, cards, history, p0, p1):
 		nodeUtil = 0
@@ -104,7 +101,7 @@ class KuhnTrainer():
 
 		infoset = str(cards[player]) + history
 		node = None
-		
+
 		# Retrieve corresponding state from dictionary
 		if infoset in self.nodeMap:
 			node = self.nodeMap[infoset]
@@ -113,7 +110,7 @@ class KuhnTrainer():
 			self.nodeMap[infoset] = node
 
 		strategy = []
-		util = [0] * NUM_ACTIONS
+		util = [0] * len(KuhnAction.ALL)
 
 		# Recursively compute strategy
 		if player == 0:
@@ -121,7 +118,7 @@ class KuhnTrainer():
 		else:
 			strategy = node.getStrategy(p1)
 
-		for a in range(NUM_ACTIONS):
+		for a in range(len(KuhnAction.ALL)):
 			if a == PASS:
 				nextHistory = history + 'p'
 			else:
@@ -134,7 +131,7 @@ class KuhnTrainer():
 			nodeUtil += strategy[a] * util[a]
 
 		# Compute regrets
-		for a in range(NUM_ACTIONS):
+		for a in range(len(KuhnAction.ALL)):
 			regret = util[a] - nodeUtil
 			if player == 0:
 				node.regretSum[a] += p1 * regret
