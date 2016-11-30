@@ -3,57 +3,11 @@ import os
 import random
 
 from poker.kuhn.game import CARDS, KuhnAction
+from poker.common import Node
 
 # constants
 PASS = 0
 BET = 1
-
-
-class Node():
-	def __init__(self, infoset):
-		self.infoset = infoset
-		self.regretSum = [0] * len(KuhnAction.ALL)
-		self.strategy = [0] * len(KuhnAction.ALL)
-		self.strategySum = [0] * len(KuhnAction.ALL)
-
-	def getStrategy(self, weight):
-		normalizingSum = 0
-		for a in range(len(KuhnAction.ALL)):
-			if self.regretSum[a] > 0:
-				self.strategy[a] = self.regretSum[a]
-			else:
-				self.strategy[a] = 0
-			normalizingSum += self.strategy[a]
-
-		for a in range(len(KuhnAction.ALL)):
-			if normalizingSum > 0:
-				self.strategy[a] /= normalizingSum
-			else:
-				self.strategy[a] = 1.0 / len(KuhnAction.ALL)
-
-			self.strategySum[a] += weight * self.strategy[a]
-
-		return self.strategy
-
-	def getAverageStrategy(self):
-		avgStrategy = [0] * len(KuhnAction.ALL)
-		normalizingSum = 0
-
-		for a in range(len(KuhnAction.ALL)):
-			normalizingSum += self.strategySum[a]
-		for a in range(len(KuhnAction.ALL)):
-			if normalizingSum > 0:
-				avgStrategy[a] = self.strategySum[a]/normalizingSum
-			else:
-				avgStrategy[a] = 1.0 / len(KuhnAction.ALL)
-
-		return avgStrategy
-
-	def toString(self):
-		avgStrategy = self.getAverageStrategy()
-		str_strategy = ', '.join([str(x) for x in avgStrategy])
-		return ('%s:%s' % (self.infoset, str_strategy))
-
 
 class KuhnTrainer():
 	def __init__(self, iterations):
@@ -106,23 +60,18 @@ class KuhnTrainer():
 		if infoset in self.nodeMap:
 			node = self.nodeMap[infoset]
 		else:
-			node = Node(infoset)
+			node = Node(infoset, len(KuhnAction.ALL))
 			self.nodeMap[infoset] = node
 
 		strategy = []
 		util = [0] * len(KuhnAction.ALL)
 
 		# Recursively compute strategy
-		if player == 0:
-			strategy = node.getStrategy(p0)
-		else:
-			strategy = node.getStrategy(p1)
+
+		strategy = node.getStrategy(p0) if player == 0 else node.getStrategy(p1)
 
 		for a in range(len(KuhnAction.ALL)):
-			if a == PASS:
-				nextHistory = history + 'p'
-			else:
-				nextHistory = history + 'b'
+			nextHistory = history + 'p' if a == PASS else history + 'b'
 
 			if player == 0:
 				util[a] = -self.cfr(cards, nextHistory, p0 * strategy[a], p1)
@@ -133,10 +82,7 @@ class KuhnTrainer():
 		# Compute regrets
 		for a in range(len(KuhnAction.ALL)):
 			regret = util[a] - nodeUtil
-			if player == 0:
-				node.regretSum[a] += p1 * regret
-			else:
-				node.regretSum[a] += p0 * regret
+			node.regretSum[a] += p1 * regret if player == 0 else p0 * regret
 
 		# self.nodeMap[infoset] = node
 

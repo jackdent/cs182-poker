@@ -29,3 +29,49 @@ class Action(object):
                 return []
 
         return current_node.keys()
+
+class Node():
+    def __init__(self, infoset, numActions):
+        self.numActions = numActions
+        self.infoset = infoset
+        self.regretSum = [0] * numActions
+        self.strategy = [0] * numActions
+        self.strategySum = [0] * numActions
+
+    def getStrategy(self, weight):
+        normalizingSum = 0
+        for a in range(self.numActions):
+            if self.regretSum[a] > 0:
+                self.strategy[a] = self.regretSum[a]
+            else:
+                self.strategy[a] = 0
+            normalizingSum += self.strategy[a]
+
+        for a in range(self.numActions):
+            if normalizingSum > 0:
+                self.strategy[a] /= normalizingSum
+            else:
+                self.strategy[a] = 1.0 / self.numActions
+
+            self.strategySum[a] += weight * self.strategy[a]
+
+        return self.strategy
+
+    def getAverageStrategy(self):
+        avgStrategy = [0] * self.numActions
+        normalizingSum = 0
+
+        for a in range(self.numActions):
+            normalizingSum += self.strategySum[a]
+        for a in range(self.numActions):
+            if normalizingSum > 0:
+                avgStrategy[a] = self.strategySum[a]/normalizingSum
+            else:
+                avgStrategy[a] = 1.0 / self.numActions
+
+        return avgStrategy
+
+    def toString(self):
+        avgStrategy = self.getAverageStrategy()
+        str_strategy = ', '.join([str(x) for x in avgStrategy])
+        return ('%s:%s' % (self.infoset, str_strategy))
