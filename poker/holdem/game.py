@@ -7,6 +7,15 @@ from poker.common import Action, BannerPrinter, Tree
 class HoldEmAction(Action):
     ALL = FOLD, CHECK, BET = 'f', 'c', 'b'
 
+<<<<<<< HEAD
+=======
+    DESCRIPTIONS = {
+        FOLD: 'fold',
+        CHECK: 'check',
+        BET: 'bet'
+    }
+
+>>>>>>> d603bb84af22f8a15a914943d09cbf0f6fefee8c
     VALID_ACTIONS = Tree()
     VALID_ACTIONS[CHECK][CHECK] = True
     VALID_ACTIONS[CHECK][BET][FOLD] = True
@@ -82,6 +91,9 @@ class HoldEmPoker(object):
                 game_state = (visible_board, hands[current_agent], history, round_history)
                 action = agents[current_agent].choose_action(game_state, possible_actions)
                 assert action in possible_actions
+
+                description = HoldEmAction.DESCRIPTIONS[action]
+                print('Agent %d: %s.' % (current_agent + 1, description))
 
                 if action == HoldEmAction.BET:
                     agents[current_agent].stack_size -= 1
