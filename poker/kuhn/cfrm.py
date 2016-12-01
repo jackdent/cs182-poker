@@ -43,7 +43,7 @@ class Node():
 			normalizingSum += self.strategySum[a]
 		for a in range(len(KuhnAction.ALL)):
 			if normalizingSum > 0:
-				avgStrategy[a] = self.strategySum[a]/normalizingSum
+				avgStrategy[a] = self.strategySum[a] / normalizingSum
 			else:
 				avgStrategy[a] = 1.0 / len(KuhnAction.ALL)
 

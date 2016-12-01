@@ -26,9 +26,8 @@ class InteractiveAgent(HoldEmAgent):
             Card.print_pretty_cards(hand)
             print('You have %d chips remaining.' % self.stack_size)
 
-            options = {'f': 'to fold', 'c': 'to check', 'b': 'to bet'}
-            filtered = ['"%s" %s' % (k, v) for k, v in options.iteritems()
-                                           if k in possible_actions]
+            filtered = ['"%s" to %s' % (k, v) for k, v in HoldEmAction.DESCRIPTIONS.iteritems()
+                                              if k in possible_actions]
             action = raw_input('Enter %s: ' % ', '.join(filtered))
 
             if action == 'f':
