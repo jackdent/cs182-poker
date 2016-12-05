@@ -38,3 +38,29 @@ class InteractiveAgent(HoldEmAgent):
                 return HoldEmAction.BET
             else:
                 print('Unknown action "%s", please try again.' % action)
+
+class TrainedAgent(HoldEmAgent):
+    def __init__(self, stack_size, training_data):
+        super(TrainedAgent, self).__init__(stack_size)
+        self.training_data = training_data
+
+    def choose_action(self, game_state, possible_actions):
+        visible_board, cards, history, round_history = game_state
+
+        full_history = ''.join([action for r in history for action in r]+round_history)
+        
+        infoset = str(visible_board)+str(cards)+ full_history
+        strategy = self.training_data[infoset]
+        #print "%s:%s" % (infoset, strategy)
+
+        r = random.random()
+        cumulative_probability = 0
+        a = 0
+
+        while (a < len(possible_actions) - 1):
+            cumulative_probability += strategy[a]
+            if r < cumulative_probability:
+                break
+            a += 1
+
+        return possible_actions[a]

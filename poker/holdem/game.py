@@ -3,19 +3,20 @@ import random
 
 from poker.common import Action, BannerPrinter, Tree
 
+## DELETE LATER WHEN DONE TESTING
+board=[147715, 268471337, 8398611, 2131213, 2102541]
+ten_cards = [135427, 529159,268454953,16787479,67119647,16795671,69634,268446761,139523,16812055]
+six_cards = [135427, 529159,268454953,16787479,67119647,16795671]
 
 class HoldEmAction(Action):
     ALL = FOLD, CHECK, BET = 'f', 'c', 'b'
 
-<<<<<<< HEAD
-=======
     DESCRIPTIONS = {
         FOLD: 'fold',
         CHECK: 'check',
         BET: 'bet'
     }
 
->>>>>>> d603bb84af22f8a15a914943d09cbf0f6fefee8c
     VALID_ACTIONS = Tree()
     VALID_ACTIONS[CHECK][CHECK] = True
     VALID_ACTIONS[CHECK][BET][FOLD] = True
@@ -53,12 +54,18 @@ class HoldEmPoker(object):
 
         agent_1_win_rate = 100 * wins[0] / sum(wins)
         print('Agent 1 won %d hands, %d%% of the total.' % (wins[0], agent_1_win_rate))
+        return wins
 
     def play_hand(self, agents):
         # Deal cards
+        """
+        UNCOMMENT THIS OUT LATER WHEN DONE TESTING
         deck = Deck()
         hands = [deck.draw(2), deck.draw(2)]
         board = deck.draw(5)
+        """
+        hand_cards = random.sample(ten_cards,4)
+        hands = [hand_cards[:2], hand_cards[2:]]
 
         winner = None
         history = []
@@ -100,6 +107,9 @@ class HoldEmPoker(object):
                     pot += 1
                 elif action == HoldEmAction.FOLD:
                     winner = agents[1 - current_agent]
+                    print str(current_agent+1)+" FOLDED SO WINNER IS "+str(2 - current_agent)
+                    winner.stack_size += pot
+                    return winner
                 else:
                     assert action == HoldEmAction.CHECK
 
@@ -111,6 +121,7 @@ class HoldEmPoker(object):
             current_round += 1
 
         if winner is None:
+            print "CHECKING FOR WINNER"
             # Determine the winner at the showdown
             evaluator = Evaluator()
             scores = [evaluator.evaluate(board, hands[agent]) for agent in range(2)]
