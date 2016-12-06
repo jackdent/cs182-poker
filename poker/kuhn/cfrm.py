@@ -24,9 +24,7 @@ class KuhnTrainer(Trainer):
 				f.write(v.toString() + '\n')
 
 	def cfr(self, history, cards, p0, p1):
-		plays = len(history)
-		player = plays % 2
-		opponent = 1 - player
+		plays, player, opponent = self.getPlayers(history)
 
 		# Check if in a terminal state
 		if plays > 1:
