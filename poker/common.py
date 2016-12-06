@@ -75,3 +75,52 @@ class Node():
         avgStrategy = self.getAverageStrategy()
         str_strategy = ', '.join([str(x) for x in avgStrategy])
         return ('%s:%s' % (self.infoset, str_strategy))
+
+class Trainer(object):
+    def __init__(self, iterations):
+        self.iterations = iterations
+        self.nodeMap = {}
+
+    def train(self):
+        raise NotImplementedError
+
+    def cfr(self, state, cards, p0, p1):
+        raise NotImplementedError
+
+    def getNode(self, infoset, possibleActions):
+        if infoset in self.nodeMap:
+            node = self.nodeMap[infoset]
+        else:
+            node = Node(infoset, len(possibleActions))
+            self.nodeMap[infoset] = node
+        return node
+
+    def nextState(self, state, action):
+        raise NotImplementedError
+
+    def computeStrategyAndRegrets(self, possibleActions, cards, player, node, state, p0, p1):
+        # Set up strategy and utility
+        nodeUtil = 0
+        util = [0] * len(possibleActions)
+        strategy = node.getStrategy(p0) if player == 0 else node.getStrategy(p1)
+
+        # Compute strategy
+        for idx, action in enumerate(possibleActions):
+            next_state = self.nextState(state, action)
+
+            if player == 0:
+                util[idx] = -self.cfr(next_state, cards, p0 * strategy[idx], p1)
+            else:
+                util[idx] = -self.cfr(next_state, cards, p0, p1 * strategy[idx])
+
+            nodeUtil += strategy[idx] * util[idx]
+
+        # Compute regrets
+        for idx in range(len(possibleActions)):
+            regret = util[idx] - nodeUtil
+            if player == 0:
+                node.regretSum[idx] += p1 * regret
+            else:
+                node.regretSum[idx] += p0 * regret
+
+        return nodeUtil

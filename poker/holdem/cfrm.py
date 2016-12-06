@@ -4,17 +4,14 @@ import random
 
 from deuces import Card, Deck, Evaluator
 from poker.holdem.game import HoldEmAction
-from poker.common import Node
+from poker.common import Node, Trainer
 
 # Fixed board and reduced deck -- just for very simple testing
 board=[147715, 268471337, 8398611, 2131213, 2102541]
 ten_cards = [135427, 529159,268454953,16787479,67119647,16795671,69634,268446761,139523,16812055]
 six_cards = [135427, 529159,268454953,16787479,67119647,16795671]
 
-class HoldemTrainer():
-    def __init__(self, iterations):
-        self.iterations = iterations
-        self.nodeMap = {}
+class HoldemTrainer(Trainer):
 
     def train(self):
         util = 0
@@ -30,7 +27,7 @@ class HoldemTrainer():
             hand_cards = random.sample(ten_cards,4)
             hands = [hand_cards[:2], hand_cards[2:]]
 
-            util += self.cfr(board, hands, [], "", 1, 1)
+            util += self.cfr((board, [], ""), hands, 1, 1)
 
         print 'Average game value: %f' % (util / (self.iterations))
 
@@ -39,7 +36,7 @@ class HoldemTrainer():
                 f.write(v.toString() + '\n')
 
 
-    def cfr(self, board, cards, history, round_history, p0, p1):
+    def cfr(self, (board, history, round_history), cards, p0, p1):
         # Set up variables
         current_history = list(history)
         new_round_history = str(round_history)
@@ -82,46 +79,15 @@ class HoldemTrainer():
 
         # Retrieve corresponding state from dictionary
         infoset = str(visible_board)+str(cards[player]) + full_history
-        node = None
-        nodeUtil = 0
-        if infoset in self.nodeMap:
-            node = self.nodeMap[infoset]
-        else:
-            node = Node(infoset, len(possibleActions))
-            self.nodeMap[infoset] = node
+        node = self.getNode(infoset, possibleActions)
 
-        strategy = []
-        util = [0] * len(possibleActions)
+        return self.computeStrategyAndRegrets(possibleActions, cards, player, node,
+                                                (board, current_history, new_round_history), p0, p1)
 
-        # Recursively compute strategy
-        if player == 0:
-            strategy = node.getStrategy(p0)
-        else:
-            strategy = node.getStrategy(p1)
-
-        for action_idx, action in enumerate(possibleActions):
-            next_round_history = new_round_history + action
-
-            if player == 0:
-                util[action_idx] = -self.cfr(board, cards, current_history,
-                                            next_round_history, p0 * strategy[action_idx], p1)
-            else:
-                util[action_idx] = -self.cfr(board, cards, current_history,
-                                            next_round_history, p0, p1 * strategy[action_idx])
-
-            nodeUtil += strategy[action_idx] * util[action_idx]
-
-        # Compute regrets
-        for a in range(len(possibleActions)):
-            regret = util[a] - nodeUtil
-            if player == 0:
-                node.regretSum[a] += p1 * regret
-            else:
-                node.regretSum[a] += p0 * regret
-
-        return nodeUtil
-
+    def nextState(self, infoset, action):
+        board, history, round_history = infoset
+        return (board, history, round_history + action)
 
 if __name__ == '__main__':
-    h = HoldemTrainer(800)
+    h = HoldemTrainer(100)
     h.train()

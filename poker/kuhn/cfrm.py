@@ -3,22 +3,18 @@ import os
 import random
 
 from poker.kuhn.game import CARDS, KuhnAction
-from poker.common import Node
+from poker.common import Node, Trainer
 
 # constants
 PASS = 0
 BET = 1
 
-class KuhnTrainer():
-	def __init__(self, iterations):
-		self.iterations = iterations
-		self.nodeMap = {}
-
+class KuhnTrainer(Trainer):
 	def train(self):
 		util = 0
 		for _ in range(self.iterations):
 			shuffled_cards = random.sample(CARDS, 2)
-			util += self.cfr(shuffled_cards, "", 1, 1)
+			util += self.cfr("", shuffled_cards, 1, 1)
 
 		print 'Average game value: %f' % (util / self.iterations)
 
@@ -27,7 +23,7 @@ class KuhnTrainer():
 				print v.toString()
 				f.write(v.toString() + '\n')
 
-	def cfr(self, cards, history, p0, p1):
+	def cfr(self, history, cards, p0, p1):
 		nodeUtil = 0
 		plays = len(history)
 		player = plays % 2
@@ -54,41 +50,13 @@ class KuhnTrainer():
 					return -2
 
 		infoset = str(cards[player]) + history
-		node = None
+		node = self.getNode(infoset, KuhnAction.ALL)
 
-		# Retrieve corresponding state from dictionary
-		if infoset in self.nodeMap:
-			node = self.nodeMap[infoset]
-		else:
-			node = Node(infoset, len(KuhnAction.ALL))
-			self.nodeMap[infoset] = node
+		return self.computeStrategyAndRegrets(KuhnAction.ALL, cards, player, node, history, p0, p1)
 
-		strategy = []
-		util = [0] * len(KuhnAction.ALL)
-
-		# Recursively compute strategy
-
-		strategy = node.getStrategy(p0) if player == 0 else node.getStrategy(p1)
-
-		for a in range(len(KuhnAction.ALL)):
-			nextHistory = history + 'p' if a == PASS else history + 'b'
-
-			if player == 0:
-				util[a] = -self.cfr(cards, nextHistory, p0 * strategy[a], p1)
-			else:
-				util[a] = -self.cfr(cards, nextHistory, p0, p1 * strategy[a])
-			nodeUtil += strategy[a] * util[a]
-
-		# Compute regrets
-		for a in range(len(KuhnAction.ALL)):
-			regret = util[a] - nodeUtil
-			node.regretSum[a] += p1 * regret if player == 0 else p0 * regret
-
-		# self.nodeMap[infoset] = node
-
-		return nodeUtil
-
+	def nextState(self, state, action):
+		return state+action
 
 if __name__ == '__main__':
-	k = KuhnTrainer(1000000)
+	k = KuhnTrainer(1000)
 	k.train()
