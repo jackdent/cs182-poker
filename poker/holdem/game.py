@@ -43,9 +43,9 @@ class HoldEmPoker(object):
 
             with BannerPrinter():
                 if winner:
-                    winning_agent = 1 if winner is self.agent_1 else 2
-                    wins[winning_agent - 1] += 1
-                    print('Agent %d won the hand.' % winning_agent)
+                    winning_agent = agent_order.index(winner)
+                    wins[winning_agent] += 1
+                    print('Agent %d won the hand.' % (winning_agent+1))
                 else:
                     print('The agents split the pot.')
 
@@ -107,9 +107,6 @@ class HoldEmPoker(object):
                     pot += 1
                 elif action == HoldEmAction.FOLD:
                     winner = agents[1 - current_agent]
-                    print str(current_agent+1)+" FOLDED SO WINNER IS "+str(2 - current_agent)
-                    winner.stack_size += pot
-                    return winner
                 else:
                     assert action == HoldEmAction.CHECK
 

@@ -76,7 +76,7 @@ class Node():
         str_strategy = ', '.join([str(x) for x in avgStrategy])
         return ('%s:%s' % (self.infoset, str_strategy))
 
-class Trainer(object):
+class Trainer():
     def __init__(self, iterations):
         self.iterations = iterations
         self.nodeMap = {}
@@ -87,6 +87,9 @@ class Trainer(object):
     def cfr(self, state, cards, p0, p1):
         raise NotImplementedError
 
+    def nextState(self, state, action):
+        raise NotImplementedError
+
     def getNode(self, infoset, possibleActions):
         if infoset in self.nodeMap:
             node = self.nodeMap[infoset]
@@ -94,9 +97,6 @@ class Trainer(object):
             node = Node(infoset, len(possibleActions))
             self.nodeMap[infoset] = node
         return node
-
-    def nextState(self, state, action):
-        raise NotImplementedError
 
     def computeStrategyAndRegrets(self, possibleActions, cards, player, node, state, p0, p1):
         # Set up strategy and utility
