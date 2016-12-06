@@ -90,22 +90,28 @@ class Trainer():
     def nextState(self, state, action):
         raise NotImplementedError
 
-    def getNode(self, infoset, possibleActions):
+    def getPlayers(self, history):
+        plays = len(history)
+        player = plays % 2
+        opponent = 1 - player
+        return plays, player, opponent
+
+    def getNode(self, infoset, possible_actions):
         if infoset in self.nodeMap:
             node = self.nodeMap[infoset]
         else:
-            node = Node(infoset, len(possibleActions))
+            node = Node(infoset, len(possible_actions))
             self.nodeMap[infoset] = node
         return node
 
-    def computeStrategyAndRegrets(self, possibleActions, cards, player, node, state, p0, p1):
+    def computeStrategyAndRegrets(self, possible_actions, cards, player, node, state, p0, p1):
         # Set up strategy and utility
         nodeUtil = 0
-        util = [0] * len(possibleActions)
+        util = [0] * len(possible_actions)
         strategy = node.getStrategy(p0) if player == 0 else node.getStrategy(p1)
 
         # Compute strategy
-        for idx, action in enumerate(possibleActions):
+        for idx, action in enumerate(possible_actions):
             next_state = self.nextState(state, action)
 
             if player == 0:
@@ -116,7 +122,7 @@ class Trainer():
             nodeUtil += strategy[idx] * util[idx]
 
         # Compute regrets
-        for idx in range(len(possibleActions)):
+        for idx in range(len(possible_actions)):
             regret = util[idx] - nodeUtil
             if player == 0:
                 node.regretSum[idx] += p1 * regret

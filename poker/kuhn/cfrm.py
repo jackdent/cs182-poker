@@ -24,7 +24,6 @@ class KuhnTrainer(Trainer):
 				f.write(v.toString() + '\n')
 
 	def cfr(self, history, cards, p0, p1):
-		nodeUtil = 0
 		plays = len(history)
 		player = plays % 2
 		opponent = 1 - player
@@ -35,19 +34,11 @@ class KuhnTrainer(Trainer):
 			terminalPass = history[-1] == 'p'
 			doubleBet = history[-2:] == 'bb'
 
+			# Current player wins if other player passed and current didn't (or if better card)
 			if terminalPass:
-				if history == 'pp':
-					if isPlayerCardHigher:
-						return 1
-					else:
-						return -1
-				else:
-					return 1
+				return 1 if (history != 'pp' or isPlayerCardHigher) else -1
 			elif doubleBet:
-				if isPlayerCardHigher:
-					return 2
-				else:
-					return -2
+				return 2 if isPlayerCardHigher else -2
 
 		infoset = str(cards[player]) + history
 		node = self.getNode(infoset, KuhnAction.ALL)

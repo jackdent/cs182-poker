@@ -38,56 +38,51 @@ class HoldemTrainer(Trainer):
 
     def cfr(self, (board, history, round_history), cards, p0, p1):
         # Set up variables
-        current_history = list(history)
-        new_round_history = str(round_history)
-        full_history = ''.join(history)+round_history
-        visible_board = board[:3+len(current_history)]
+        hist = list(history)
+        round_hist = str(round_history)
+        full_history = ''.join(history)+round_hist
+        visible_board = board[:3+len(hist)]
 
-        plays = len(full_history)
-        player = plays % 2
-        opponent = 1 - player
+        plays, player, opponent = self.getPlayers(full_history)
 
-        possibleActions = HoldEmAction.possible_actions(round_history)
+        possible_actions = HoldEmAction.possible_actions(round_hist)
         # Possible actions returns ['c','b','f'] any time it's called with an empty string,
         # except for the first time. This is a shady solution-- fix later
         if plays == 0:
-            possibleActions = HoldEmAction.possible_actions('c')
+            possible_actions = HoldEmAction.possible_actions('c')
          
         # Check if it is the end of a round
-        if len(possibleActions) == 0:
+        if len(possible_actions) == 0:
             evaluator = Evaluator()
             scores = [evaluator.evaluate(visible_board, hand) for hand in cards]
             isPlayerHandBetter = scores[player] < scores[opponent]
             winnings = 1 + (''.join(full_history).count('b'))/2
-            terminalFold = (new_round_history[-1] == 'f')
+            terminalFold = (round_hist[-1] == 'f')
 
             # If last player folded, current player automatically wins
             if terminalFold:
                 return winnings
             # If there are no more rounds, give points to player with better cards
-            elif len(current_history) == 2:
-                if isPlayerHandBetter:
-                    return winnings
-                else:
-                    return -winnings
+            elif len(hist) == 2:
+                return winnings if isPlayerHandBetter else -winnings
 
             # Start a new round
-            current_history.append(new_round_history)
-            new_round_history=''
-            visible_board = board[:3+len(current_history)]
-            possibleActions = HoldEmAction.possible_actions('c')
+            hist.append(round_hist)
+            round_hist=''
+            visible_board = board[:3+len(hist)]
+            possible_actions = HoldEmAction.possible_actions('c')
 
         # Retrieve corresponding state from dictionary
         infoset = str(visible_board)+str(cards[player]) + full_history
-        node = self.getNode(infoset, possibleActions)
+        node = self.getNode(infoset, possible_actions)
 
-        return self.computeStrategyAndRegrets(possibleActions, cards, player, node,
-                                                (board, current_history, new_round_history), p0, p1)
+        return self.computeStrategyAndRegrets(possible_actions, cards, player, node,
+                                                (board, hist, round_hist), p0, p1)
 
     def nextState(self, infoset, action):
         board, history, round_history = infoset
         return (board, history, round_history + action)
 
 if __name__ == '__main__':
-    h = HoldemTrainer(100)
+    h = HoldemTrainer(10)
     h.train()
