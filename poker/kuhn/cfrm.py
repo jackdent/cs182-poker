@@ -34,7 +34,7 @@ class KuhnTrainer(Trainer):
 
 			# Current player wins if other player passed and current didn't (or if better card)
 			if terminalPass:
-				return 1 if (history != 'pp' or isPlayerCardHigher) else -1
+				return 1 if history != 'pp' or isPlayerCardHigher else -1
 			elif doubleBet:
 				return 2 if isPlayerCardHigher else -2
 
