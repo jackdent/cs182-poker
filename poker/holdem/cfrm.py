@@ -37,7 +37,7 @@ class HoldemTrainer(Trainer):
 
         print 'Average game value: %f' % (util / (self.iterations))
 
-        with open(os.path.join(os.path.dirname(__file__), 'strategies', strategy_%d.txt'%(i)), 'w') as f:
+        with open(os.path.join(os.path.dirname(__file__), 'strategies', 'strategy_%d.txt'%i), 'w') as f:
             for k, v in self.nodeMap.iteritems():
                 f.write(v.toString() + '\n')
 
