@@ -1,37 +1,44 @@
 import csv
 import os
 import random
+import time
+import argparse
 
 from deuces import Card, Deck, Evaluator
 from poker.holdem.game import HoldEmAction
 from poker.common import Node, Trainer
 
 # Fixed board and reduced deck -- just for very simple testing
-board=[147715, 268471337, 8398611, 2131213, 2102541]
-ten_cards = [135427, 529159,268454953,16787479,67119647,16795671,69634,268446761,139523,16812055]
-six_cards = [135427, 529159,268454953,16787479,67119647,16795671]
+#board=[147715, 268471337, 8398611, 2131213, 2102541]
+tiny_deck = [135427, 529159,268454953,16787479,67119647,16795671,69634,268446761,139523,16812055]
+possible_arrangemeants = 300000
 
 class HoldemTrainer(Trainer):
 
-    def train(self):
+    def getCards(self, i, n_shards):
+        for _ in range(300000):
+            random.shuffle(tiny_deck)
+            # Sort the 3 starting board cards because their order doesn't matter
+            starting_board = tiny_deck[:3]
+            starting_board.sort()
+            board = starting_board+tiny_deck[3:5]
+            if hash(str(board)) % n_shards == i:
+                return board, [tiny_deck[5:7], tiny_deck[7:9]]
+
+    def train(self, i, n_shards):
         util = 0
-
+        start_time = time.time()
+        
         for _ in range(self.iterations):
-            """
-            deck = Deck()
-            hands = [deck.draw(2), deck.draw(2)]
-            board = deck.draw(5)
-            """
-            
-            # THIS IS JUST FOR TESTING TO REDUCE SPACE
-            hand_cards = random.sample(ten_cards,4)
-            hands = [hand_cards[:2], hand_cards[2:]]
-
+            board, hands = self.getCards(i, n_shards)
             util += self.cfr((board, [], ""), hands, 1, 1)
+
+        print 'Average time per iteration:'
+        print ((time.time() - start_time)/self.iterations)
 
         print 'Average game value: %f' % (util / (self.iterations))
 
-        with open(os.path.join(os.path.dirname(__file__), 'strategy.txt'), 'w') as f:
+        with open(os.path.join(os.path.dirname(__file__), '/strategies/strategy_%d.txt'%(i)), 'w') as f:
             for k, v in self.nodeMap.iteritems():
                 f.write(v.toString() + '\n')
 
@@ -84,5 +91,15 @@ class HoldemTrainer(Trainer):
         return (board, history, round_history + action)
 
 if __name__ == '__main__':
-    h = HoldemTrainer(10)
-    h.train()
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('-i', help='iteration')
+    parser.add_argument('-n_shards', help='iteration')
+    parser.add_argument('-n_iterations', help='iteration')
+    
+    i = int(parser.parse_args().i) 
+    n_shards = int(parser.parse_args().n_shards)
+    n_iterations = int(parser.parse_args().n_iterations)
+
+    h = HoldemTrainer(n_iterations)
+    h.train(i, n_shards)
