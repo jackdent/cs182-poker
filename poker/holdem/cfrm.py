@@ -9,7 +9,6 @@ from poker.holdem.game import HoldEmAction
 from poker.common import Node, Trainer
 
 # Fixed board and reduced deck -- just for very simple testing
-#board=[147715, 268471337, 8398611, 2131213, 2102541]
 tiny_deck = [135427, 529159,268454953,16787479,67119647,16795671,69634,268446761,139523,16812055]
 possible_arrangemeants = 300000
 
@@ -38,7 +37,7 @@ class HoldemTrainer(Trainer):
 
         print 'Average game value: %f' % (util / (self.iterations))
 
-        with open(os.path.join(os.path.dirname(__file__), '/strategies/strategy_%d.txt'%(i)), 'w') as f:
+        with open(os.path.join(os.path.dirname(__file__), 'strategies', strategy_%d.txt'%(i)), 'w') as f:
             for k, v in self.nodeMap.iteritems():
                 f.write(v.toString() + '\n')
 
