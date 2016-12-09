@@ -44,7 +44,7 @@ class TrainedAgent(KuhnAgent):
         infoset = str(card) + ''.join(history)
         # strategy = self.training_data[infoset].getAverageStrategy()
         strategy = self.training_data[infoset]
-        print "%s:%s" % (infoset, strategy)
+        # print "%s:%s" % (infoset, strategy)
 
         r = random.random()
         cumulative_probability = 0

@@ -30,14 +30,16 @@ class KuhnPoker(object):
             winner = self.play_hand()
             winning_agent = 1 if winner is self.agent_1 else 2
 
-            with BannerPrinter():
-                print('Agent %d won the hand. Agents 1 and 2 now have %d and %d chips, respectively.'
-                      % (winning_agent, self.agent_1.stack_size, self.agent_2.stack_size))
+            # with BannerPrinter():
+            #     print('Agent %d won the hand. Agents 1 and 2 now have %d and %d chips, respectively.'
+            #           % (winning_agent, self.agent_1.stack_size, self.agent_2.stack_size))
 
             wins[winning_agent - 1] += 1
 
         agent_1_win_rate = 100 * wins[0] / sum(wins)
-        print('Agent 1 won %d hands, %d%% of the total.' % (wins[0], agent_1_win_rate))
+        # print('Agent 1 won %d hands, %d%% of the total.' % (wins[0], agent_1_win_rate))
+
+        return 1 if agent_1_win_rate > 50 else 2
 
     def play_hand(self):
         pot = 0

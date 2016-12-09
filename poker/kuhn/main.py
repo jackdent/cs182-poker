@@ -27,5 +27,15 @@ if __name__ == '__main__':
         print('Invalid agent "%s".' % user_agent)
         sys.exit()
 
-    game = KuhnPoker(agent, TrainedAgent(BUY_IN, training_data))
-    game.play(2000)
+    wins = [0, 0]
+    total_games = 100
+
+    for _ in range(total_games):
+        agent = TrainedAgent(BUY_IN, training_data)
+        # agent = SimpleAgent(BUY_IN)
+        game = KuhnPoker(agent, TrainedAgent(BUY_IN, training_data))
+        winner = game.play()
+        wins[winner - 1] += 1
+    agent_1_win_rate = 100 * wins[0] / total_games
+
+    print('Agent 1 won %d games out of %d, %d%% of the total.' % (wins[0], total_games, agent_1_win_rate))
