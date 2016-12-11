@@ -4,7 +4,6 @@ import sys
 import os
 import numpy as np
 
-
 if __name__ == '__main__':
     BUY_IN = 10
 
@@ -23,4 +22,3 @@ if __name__ == '__main__':
         total_games += sum(wins)
 
     print('Trained agent won %d hands, %d%% of the total.' % (trained_wins, 100 * trained_wins / total_games))
-

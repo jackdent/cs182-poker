@@ -9,7 +9,6 @@ from poker.holdem.game import HoldEmAction
 from poker.common import Node, Trainer
 
 class HoldemTrainer(Trainer):
-
     def getCards(self, i, n_shards, deck):
         max_search_iter = n_shards*5
         for _ in range(max_search_iter):
@@ -57,7 +56,7 @@ class HoldemTrainer(Trainer):
         # except for the first time. This is a shady solution-- fix later
         if plays == 0:
             possible_actions = HoldEmAction.possible_actions('c')
-         
+
         # Check if it is the end of a round
         if len(possible_actions) == 0:
             evaluator = Evaluator()

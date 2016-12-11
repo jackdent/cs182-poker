@@ -5,10 +5,6 @@ import random
 from poker.kuhn.game import CARDS, KuhnAction
 from poker.common import Node, Trainer
 
-# constants
-PASS = 0
-BET = 1
-
 class KuhnTrainer(Trainer):
 	def train(self):
 		util = 0
@@ -16,7 +12,7 @@ class KuhnTrainer(Trainer):
 			shuffled_cards = random.sample(CARDS, 2)
 			util += self.cfr("", shuffled_cards, 1, 1)
 
-		print 'Average game value: %f' % (util / self.iterations)
+		print('Average game value: %f' % (util / self.iterations))
 
 		with open(os.path.join(os.path.dirname(__file__), 'strategy.txt'), 'w') as f:
 			for k, v in self.nodeMap.iteritems():
