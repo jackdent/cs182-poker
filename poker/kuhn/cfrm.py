@@ -47,5 +47,5 @@ class KuhnTrainer(Trainer):
 		return state+action
 
 if __name__ == '__main__':
-	k = KuhnTrainer(1000)
+	k = KuhnTrainer(1000000)
 	k.train()
