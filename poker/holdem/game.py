@@ -3,10 +3,8 @@ import random
 
 from poker.common import Action, BannerPrinter, Tree
 
-## DELETE LATER WHEN DONE TESTING
-board=[147715, 268471337, 8398611, 2131213, 2102541]
-ten_cards = [135427, 529159,268454953,16787479,67119647,16795671,69634,268446761,139523,16812055]
-six_cards = [135427, 529159,268454953,16787479,67119647,16795671]
+tiny_deck = [135427, 529159,268454953,16787479,67119647,16795671,69634,268446761,139523,16812055]
+DECK=tiny_deck
 
 class HoldEmAction(Action):
     ALL = FOLD, CHECK, BET = 'f', 'c', 'b'
@@ -58,14 +56,9 @@ class HoldEmPoker(object):
 
     def play_hand(self, agents):
         # Deal cards
-        """
-        UNCOMMENT THIS OUT LATER WHEN DONE TESTING
-        deck = Deck()
-        hands = [deck.draw(2), deck.draw(2)]
-        board = deck.draw(5)
-        """
-        hand_cards = random.sample(ten_cards,4)
-        hands = [hand_cards[:2], hand_cards[2:]]
+        random.shuffle(tiny_deck)
+        board = tiny_deck[:5]
+        hands = [tiny_deck[5:7], tiny_deck[7:9]]
 
         winner = None
         history = []
