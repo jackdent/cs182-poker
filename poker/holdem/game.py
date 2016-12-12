@@ -3,8 +3,7 @@ import random
 
 from poker.common import Action, BannerPrinter, Tree
 
-tiny_deck = [135427, 529159,268454953,16787479,67119647,16795671,69634,268446761,139523,16812055]
-DECK=tiny_deck
+DECK=[135427, 529159,268454953,16787479,67119647,16795671,69634,268446761,139523,16812055]
 
 class HoldEmAction(Action):
     ALL = FOLD, CHECK, BET = 'f', 'c', 'b'
@@ -56,9 +55,9 @@ class HoldEmPoker(object):
 
     def play_hand(self, agents):
         # Deal cards
-        random.shuffle(tiny_deck)
-        board = tiny_deck[:5]
-        hands = [tiny_deck[5:7], tiny_deck[7:9]]
+        random.shuffle(DECK)
+        board = DECK[:5]
+        hands = [DECK[5:7], DECK[7:9]]
 
         winner = None
         history = []
