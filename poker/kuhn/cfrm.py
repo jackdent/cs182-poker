@@ -1,6 +1,7 @@
 import csv
 import os
 import random
+import sys
 
 from poker.kuhn.game import CARDS, KuhnAction
 from poker.common import Node, Trainer
@@ -8,9 +9,13 @@ from poker.common import Node, Trainer
 class KuhnTrainer(Trainer):
 	def train(self):
 		util = 0
-		for _ in range(self.iterations):
+		if self.iterations == 0:
 			shuffled_cards = random.sample(CARDS, 2)
 			util += self.cfr("", shuffled_cards, 1, 1)
+		else:
+			for _ in range(self.iterations):
+				shuffled_cards = random.sample(CARDS, 2)
+				util += self.cfr("", shuffled_cards, 1, 1)
 
 		print('Average game value: %f' % (util / self.iterations))
 
@@ -43,5 +48,17 @@ class KuhnTrainer(Trainer):
 		return state+action
 
 if __name__ == '__main__':
-	k = KuhnTrainer(1000000)
-	k.train()
+	user_agent = raw_input('How many times would you like to train the bot: ')
+	while True:
+		try: 
+			iterations = int(user_agent)
+			if iterations > 0:
+				k = KuhnTrainer(iterations)
+				k.train()
+				break
+			else:
+				print('Please provide a positive integer')
+				sys.exit()
+		except ValueError:
+			print('Please provide a positive integer')
+			sys.exit()

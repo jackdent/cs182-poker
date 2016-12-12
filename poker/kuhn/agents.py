@@ -43,7 +43,12 @@ class TrainedAgent(KuhnAgent):
         card, history = game_state
         infoset = str(card) + ''.join(history)
         # strategy = self.training_data[infoset].getAverageStrategy()
-        strategy = self.training_data[infoset]
+        strategy = []
+        if infoset in self.training_data:
+            strategy = self.training_data[infoset]
+        else:
+            strategy = [1/len(KuhnAction.ALL)] * len(KuhnAction.ALL)
+
         # print "%s:%s" % (infoset, strategy)
 
         r = random.random()
