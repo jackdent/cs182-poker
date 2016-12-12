@@ -2,7 +2,7 @@ import os
 import numpy as np
 import sys
 
-from poker.kuhn.agents import InteractiveAgent, TrainedAgent, NashAgent, SimpleAgent
+from poker.kuhn.agents import InteractiveAgent, TrainedAgent, SimpleAgent
 from poker.kuhn.game import KuhnPoker
 
 if __name__ == '__main__':

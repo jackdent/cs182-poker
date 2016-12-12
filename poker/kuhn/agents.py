@@ -10,12 +10,6 @@ class KuhnAgent(object):
     def choose_action(self):
         raise NotImplementedError
 
-
-class BetAgent(KuhnAgent):
-    def choose_action(self, game_state):
-        return KuhnAction.BET
-
-
 class NashAgent(KuhnAgent):
     def choose_action(self, game_state):
         if random.random() < 1/3:
