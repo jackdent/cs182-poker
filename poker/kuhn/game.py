@@ -36,8 +36,8 @@ class KuhnPoker(object):
 
             wins[winning_agent - 1] += 1
 
-        agent_1_win_rate = 100 * wins[0] / sum(wins)
-        # print('Agent 1 won %d hands, %d%% of the total.' % (wins[0], agent_1_win_rate))
+        agent_1_win_rate = 100 * wins[0] / max_hands
+        print('Agent 1 won %d hands, %d%% of the total.' % (wins[0], agent_1_win_rate))
 
         return 1 if agent_1_win_rate > 50 else 2
 
