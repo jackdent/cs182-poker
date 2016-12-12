@@ -40,9 +40,9 @@ class HoldEmPoker(object):
 
             with BannerPrinter():
                 if winner:
-                    winning_agent = agent_order.index(winner)
-                    wins[winning_agent] += 1
-                    print('Agent %d won the hand.' % (winning_agent+1))
+                    winning_agent = 1 if winner is self.agent_1 else 2
+                    wins[winning_agent-1] += 1
+                    print('Agent %d won the hand.' % (winning_agent))
                 else:
                     print('The agents split the pot.')
 
@@ -92,7 +92,8 @@ class HoldEmPoker(object):
                 assert action in possible_actions
 
                 description = HoldEmAction.DESCRIPTIONS[action]
-                print('Agent %d: %s.' % (current_agent + 1, description))
+                agent_index = 1 if agents[current_agent] is self.agent_1 else 2
+                print('Agent %d: %s.' % (agent_index, description))
 
                 if action == HoldEmAction.BET:
                     agents[current_agent].stack_size -= 1
