@@ -32,7 +32,6 @@ if __name__ == '__main__':
             trained_wins += wins[i%2]
             total_hands += sum(wins)
             players.reverse()
-
         print('Trained agent won %d hands, %d%% of the total.' % (trained_wins, 100 * trained_wins / total_hands))
 
     else:

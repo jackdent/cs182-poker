@@ -86,7 +86,7 @@ class HoldEmPoker(object):
             round_history = []
             possible_actions = HoldEmAction.possible_actions(round_history)
 
-            while winner is None and len(possible_actions) > 0:
+            while winner is None:
                 game_state = (visible_board, hands[current_agent], history, round_history)
                 action = agents[current_agent].choose_action(game_state, possible_actions)
                 assert action in possible_actions
