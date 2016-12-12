@@ -22,19 +22,6 @@ if __name__ == '__main__':
                 training_data[l[0]] = np.fromstring(l[1], dtype=float, sep=',')
 
     if test:
-        # trained_wins = 0
-        # total_games = 0
-        # get_agent = {'Random': lambda x: RandomAgent(x), 'Trained': lambda x: TrainedAgent(x, training_data)}
-        # players = ['Trained','Random']
-        # for i in range(100):
-        #     game = HoldEmPoker(get_agent[players[0]](BUY_IN),get_agent[players[1]](BUY_IN))
-        #     winner = game.play()
-        #     trained_wins += wins[i%2]
-        #     total_games += sum(wins)
-        #     players.reverse()
-        # print('Trained agent won %d games, %d%% of the total.' % (trained_wins, 100 * trained_wins / total_games))
-
-        #     wins = {'simple': 0, 'trained': 0}
         wins = {'simple': 0, 'trained': 0}
         total_games = 100
 
