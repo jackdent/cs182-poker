@@ -5,27 +5,27 @@ import time
 import argparse
 
 from deuces import Card, Deck, Evaluator
-from poker.holdem.game import HoldEmAction
+from poker.holdem.game import HoldEmAction, DECK
 from poker.common import Node, Trainer
 
 class HoldemTrainer(Trainer):
-    def getCards(self, i, n_shards, deck):
+    def getCards(self, i, n_shards):
         max_search_iter = n_shards*5
         for _ in range(max_search_iter):
-            random.shuffle(deck)
+            random.shuffle(DECK)
             # Sort the 3 starting board cards because their order doesn't matter
-            starting_board = deck[:3]
+            starting_board = DECK[:3]
             starting_board.sort()
             if (abs(hash(str(starting_board)))) % n_shards == i:
-                return starting_board+deck[3:5], [deck[5:7], deck[7:9]]
+                return starting_board+DECK[3:5], [DECK[5:7], DECK[7:9]]
         return None, None
 
-    def train(self, i, n_shards, strategy_folder, deck):
+    def train(self, i, n_shards, strategy_folder):
         util = 0
         start_time = time.time()
 
         for _ in range(self.iterations):
-            board, hands = self.getCards(i, n_shards, deck)
+            board, hands = self.getCards(i, n_shards)
             if board and hands:
                 util += self.cfr((board, [], ""), hands, 1, 1)
             else:
@@ -52,8 +52,6 @@ class HoldemTrainer(Trainer):
         plays, player, opponent = self.getPlayers(full_history)
 
         possible_actions = HoldEmAction.possible_actions(round_hist)
-        # Possible actions returns ['c','b','f'] any time it's called with an empty string,
-        # except for the first time. This is a shady solution-- fix later
         if plays == 0:
             possible_actions = HoldEmAction.possible_actions('c')
 
@@ -91,29 +89,24 @@ class HoldemTrainer(Trainer):
 
 if __name__ == '__main__':
 
-    # so many command line arguments yikez
+    # Command line arguments to specify parameters for sharding / saving
     parser = argparse.ArgumentParser()
-    parser.add_argument('--i', help='iteration')
-    parser.add_argument('--n_shards', help='iteration')
-    parser.add_argument('--n_iterations', help='iteration')
-    parser.add_argument('--strategy_folder', help='folder to put strategies')
-    parser.add_argument('--starting_job', help='index of first job')
-    parser.add_argument('--training_deck', help='tiny_deck(10 cards) or medium_deck(13 cards)')
-  
-    n_shards = int(parser.parse_args().n_shards)
-    n_iterations = int(parser.parse_args().n_iterations)
+    parser.add_argument('--i', help='Job number', type=int, default=0)
+    parser.add_argument('--n_shards', help='Total number of shards/jobs', type=int, default=199)
+    parser.add_argument('--n_iterations', help='Number of iterations per shard, (should be more than \
+                         the number of boards hash to a given shard, the more the better)', type=int, default=1)
+    parser.add_argument('--strategy_folder', help='The folder to save the strategy files in', default='ten_cards')
+    parser.add_argument('--starting_job', help='Starting index of the first job', type=int, default=0)
+
+    i = parser.parse_args().i
+    n_shards = parser.parse_args().n_shards
+    n_iterations = parser.parse_args().n_iterations
     strategy_folder = parser.parse_args().strategy_folder
-    
+
     # Odyssey doesn't let you run an array of jobs that doesn't start at 0
-    # so this is a shady hack to let you start your array at job i
-    i = int(parser.parse_args().i) 
-    starting_job = int(parser.parse_args().starting_job)
+    # so this is a hack to let you start your array at job i
+    starting_job = parser.parse_args().starting_job
     i += starting_job
 
-    training_deck = parser.parse_args().training_deck
-    decks = {'tiny_deck':[135427, 529159,268454953,16787479,67119647,16795671,69634,268446761,139523,16812055],
-            'medium_deck' : [134253349,295429,33560861,134228773,135427,67115551,16783383,67119647,33564957,73730,16812055,533255,8394515]}
-    deck = decks[training_deck]
-
     h = HoldemTrainer(n_iterations)
-    h.train(i, n_shards, strategy_folder, deck)
+    h.train(i, n_shards, strategy_folder)
