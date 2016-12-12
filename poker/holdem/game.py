@@ -3,10 +3,7 @@ import random
 
 from poker.common import Action, BannerPrinter, Tree
 
-## DELETE LATER WHEN DONE TESTING
-board=[147715, 268471337, 8398611, 2131213, 2102541]
-ten_cards = [135427, 529159,268454953,16787479,67119647,16795671,69634,268446761,139523,16812055]
-six_cards = [135427, 529159,268454953,16787479,67119647,16795671]
+DECK=[135427, 529159,268454953,16787479,67119647,16795671,69634,268446761,139523,16812055]
 
 class HoldEmAction(Action):
     ALL = FOLD, CHECK, BET = 'f', 'c', 'b'
@@ -58,14 +55,9 @@ class HoldEmPoker(object):
 
     def play_hand(self, agents):
         # Deal cards
-        """
-        UNCOMMENT THIS OUT LATER WHEN DONE TESTING
-        deck = Deck()
-        hands = [deck.draw(2), deck.draw(2)]
-        board = deck.draw(5)
-        """
-        hand_cards = random.sample(ten_cards,4)
-        hands = [hand_cards[:2], hand_cards[2:]]
+        random.shuffle(DECK)
+        board = DECK[:5]
+        hands = [DECK[5:7], DECK[7:9]]
 
         winner = None
         history = []
@@ -94,7 +86,7 @@ class HoldEmPoker(object):
             round_history = []
             possible_actions = HoldEmAction.possible_actions(round_history)
 
-            while winner is None and len(possible_actions) > 0:
+            while winner is None:
                 game_state = (visible_board, hands[current_agent], history, round_history)
                 action = agents[current_agent].choose_action(game_state, possible_actions)
                 assert action in possible_actions

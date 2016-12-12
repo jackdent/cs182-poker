@@ -3,7 +3,6 @@ import random
 
 from poker.holdem.game import HoldEmAction
 
-
 class HoldEmAgent(object):
     def __init__(self, stack_size):
         self.stack_size = stack_size
@@ -39,6 +38,7 @@ class InteractiveAgent(HoldEmAgent):
             else:
                 print('Unknown action "%s", please try again.' % action)
 
+
 class TrainedAgent(HoldEmAgent):
     def __init__(self, stack_size, training_data):
         super(TrainedAgent, self).__init__(stack_size)
@@ -48,10 +48,12 @@ class TrainedAgent(HoldEmAgent):
         visible_board, cards, history, round_history = game_state
 
         full_history = ''.join([action for r in history for action in r]+round_history)
-        
+
         infoset = str(visible_board)+str(cards)+ full_history
-        strategy = self.training_data[infoset]
-        #print "%s:%s" % (infoset, strategy)
+        if infoset in self.training_data:
+            strategy = self.training_data[infoset]
+        else:
+            strategy = [1/len(possible_actions)]*len(possible_actions)
 
         r = random.random()
         cumulative_probability = 0
