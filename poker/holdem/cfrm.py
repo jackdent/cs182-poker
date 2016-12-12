@@ -25,7 +25,7 @@ class HoldemTrainer(Trainer):
         start_time = time.time()
 
         for _ in range(self.iterations):
-            board, hands = self.getCards(i, n_shards, DECK)
+            board, hands = self.getCards(i, n_shards)
             if board and hands:
                 util += self.cfr((board, [], ""), hands, 1, 1)
             else:
@@ -52,8 +52,6 @@ class HoldemTrainer(Trainer):
         plays, player, opponent = self.getPlayers(full_history)
 
         possible_actions = HoldEmAction.possible_actions(round_hist)
-        # Possible actions returns ['c','b','f'] any time it's called with an empty string,
-        # except for the first time. This is a shady solution-- fix later
         if plays == 0:
             possible_actions = HoldEmAction.possible_actions('c')
 
@@ -93,21 +91,21 @@ if __name__ == '__main__':
 
     # Command line arguments to specify parameters for sharding / saving
     parser = argparse.ArgumentParser()
-    parser.add_argument('--i', help='Job number')
-    parser.add_argument('--n_shards', help='Total number of shards/jobs')
+    parser.add_argument('--i', help='Job number', type=int, default=0)
+    parser.add_argument('--n_shards', help='Total number of shards/jobs', type=int, default=199)
     parser.add_argument('--n_iterations', help='Number of iterations per shard, (should be more than \
-                                                the number of boards hash to a given shard, the more the better)')
-    parser.add_argument('--strategy_folder', help='The folder to save the strategy files in')
-    parser.add_argument('--starting_job', help='Starting index of the first job')
-  
-    i = int(parser.parse_args().i) 
-    n_shards = int(parser.parse_args().n_shards)
-    n_iterations = int(parser.parse_args().n_iterations)
+                         the number of boards hash to a given shard, the more the better)', type=int, default=1)
+    parser.add_argument('--strategy_folder', help='The folder to save the strategy files in', default='ten_cards')
+    parser.add_argument('--starting_job', help='Starting index of the first job', type=int, default=0)
+
+    i = parser.parse_args().i
+    n_shards = parser.parse_args().n_shards
+    n_iterations = parser.parse_args().n_iterations
     strategy_folder = parser.parse_args().strategy_folder
-    
+
     # Odyssey doesn't let you run an array of jobs that doesn't start at 0
-    # so this is a shady hack to let you start your array at job i
-    starting_job = int(parser.parse_args().starting_job)
+    # so this is a hack to let you start your array at job i
+    starting_job = parser.parse_args().starting_job
     i += starting_job
 
     h = HoldemTrainer(n_iterations)

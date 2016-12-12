@@ -22,5 +22,5 @@ python -m poker.holdem.cfrm \
 --i "$SLURM_ARRAY_TASK_ID" \
 --n_shards 199 \
 --n_iterations 12500 \
---strategy_folder new \
+--strategy_folder ten_cards \
 --starting_job 7 \
