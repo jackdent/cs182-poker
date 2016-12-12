@@ -27,11 +27,9 @@ if __name__ == '__main__':
         get_agent = {'Random': lambda x: RandomAgent(x), 'Trained': lambda x: TrainedAgent(x, training_data)}
         players = ['Trained','Random']
         for i in range(100):
-            #game = HoldEmPoker(get_agent[players[0]](BUY_IN),get_agent[players[1]](BUY_IN))
-            game = HoldEmPoker(TrainedAgent(BUY_IN, training_data), TrainedAgent(BUY_IN, training_data))
+            game = HoldEmPoker(get_agent[players[0]](BUY_IN),get_agent[players[1]](BUY_IN))
             wins = game.play()
-            #trained_wins += wins[i%2]
-            trained_wins += wins[0]
+            trained_wins += wins[i%2]
             total_hands += sum(wins)
             players.reverse()
         print('Trained agent won %d hands, %d%% of the total.' % (trained_wins, 100 * trained_wins / total_hands))
